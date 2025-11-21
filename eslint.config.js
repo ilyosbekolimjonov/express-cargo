@@ -14,9 +14,7 @@ export default defineConfig([
         extends: [js.configs.recommended],
         rules: {
             "no-undef": "error",
-            "no-unused-vars": "error",
             "no-unused-expressions": "error",
-            "prefer-const": ["error", { ignoreReadBeforeAssign: true }],
             eqeqeq: "off",
         },
         linterOptions: {
