@@ -1,13 +1,12 @@
-import { Router } from "express";
-import { userController } from "../controllers/user.controller.js";
-import { authGuard, roleGuard } from "../middlewares/guard.js";
+import { Router } from "express"
+import { UserController } from "../controllers/user.controller.js"
+import { authGuard, roleGuard } from "../middlewares/guard.middleware.js"
 
-const router = Router();
+const router = Router()
 
-router.post("/", authGuard, roleGuard("admin"), userController.create);
-router.get("/", authGuard, roleGuard(["admin", "operator"]), userController.getAll);
-router.get("/:id", authGuard, roleGuard(["admin", "operator"]), userController.getById);
-router.put("/:id", authGuard, roleGuard("admin"), userController.update);
-router.delete("/:id", authGuard, roleGuard("admin"), userController.remove);
+router.get("/", authGuard, roleGuard(["admin"]), UserController.getAllUsers)
+router.get("/:id", authGuard, roleGuard(["admin"]), UserController.getSingleUser)
+router.put("/:id", authGuard, roleGuard(["admin"]), UserController.editUser)
+router.delete("/:id", authGuard, roleGuard(["admin"]), UserController.removeUser)
 
-export {router as UserRouter};
+export { router as userRouter}

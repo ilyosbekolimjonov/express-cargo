@@ -1,15 +1,16 @@
-import { Router } from 'express'
-import { authController } from '../controllers/auth.controller.js'
-import { authGuard, refreshGuard, roleGuard } from '../middlewares/guard.js'
-import { validate } from '../validations/validation.js'
-import { createUserSchema } from '../validations/user.validation.js'
-import { loginSchema } from '../validations/user.validation.js'
+import { Router } from "express"
+import { AuthController } from "../controllers/auth.controller.js"
+import { authGuard } from "../middlewares/guard.middleware.js"
+
 const router = Router()
 
+router.post("/signup", AuthController.register)
+router.post("/verify-otp", AuthController.verifyOtp)
+router.post("/resend-otp", AuthController.resendOtp)
+router.post("/login", AuthController.login)
 
-router.get('/profile', authGuard, roleGuard('admin', 'deliveryStaff', 'customer'), authController.profile)
-router.post('/signin', validate(loginSchema, 'body'), authController.signin)
-router.post('/signup', validate(createUserSchema, 'body'), authController.signup)
-router.post('/refresh', refreshGuard, authController.updateAccess)
+router.get("/me", authGuard, AuthController.myProfile)
+router.post("/logout", authGuard, AuthController.logout)
+router.post("/refresh-token", AuthController.refreshToken)
 
 export { router as authRouter }

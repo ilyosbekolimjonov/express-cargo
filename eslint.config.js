@@ -1,6 +1,6 @@
-import js from "@eslint/js";
-import globals from "globals";
-import { defineConfig } from "eslint/config";
+import js from "@eslint/js"
+import globals from "globals"
+import { defineConfig } from "eslint/config"
 
 export default defineConfig([
     {
@@ -13,13 +13,11 @@ export default defineConfig([
         },
         extends: [js.configs.recommended],
         rules: {
-            "no-undef": "error",
-            "no-unused-expressions": "error",
-            eqeqeq: "off",
+            "no-unused-vars": "off"
         },
         linterOptions: {
-            reportUnusedDisableDirectives: "error",
-            noInlineConfig: true,
+            reportUnusedDisableDirectives: "off",
+            noInlineConfig: false,
         },
     },
-]);
+])

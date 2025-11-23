@@ -10,9 +10,8 @@ const PORT = process.env.PORT
 app.use(express.json())
 
 app.use('/', router)
-app.use(errorHandler);
+app.use(errorHandler)
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-
+    console.log(`Server running on port ${PORT}`)
 })

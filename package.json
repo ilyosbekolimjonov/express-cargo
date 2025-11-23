@@ -2,10 +2,10 @@
   "name": "express-cargo",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start:dev": "node --watch server.js",
+    "dev": "node --watch server.js",
     "prepare": "npx husky install",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -34,15 +34,16 @@
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
     "lint-staged": "^16.2.6",
-    "prettier": "^3.6.2",
-    "prisma": "^6.19.0"
+    "prettier": "^3.6.2"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "joi": "^18.0.1",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "nodemailer": "^7.0.10",
+    "pg": "^8.16.3",
+    "zod": "^4.1.12"
   }
 }

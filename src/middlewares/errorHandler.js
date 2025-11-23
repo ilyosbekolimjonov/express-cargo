@@ -1,18 +1,10 @@
-import { ApiError } from "./apiError.js"
+export function errorHandler(err, req, res, next) {
+    console.error("Error:", err)
 
-export const errorHandler = (err, req, res) => {
-    console.error("Error:", err.message)
+    const status = err.status || 500
 
-    if (err instanceof ApiError) {
-        return res.status(err.statusCode).json({
-            success: false,
-            message: err.message,
-        })
-    }
-
-    res.status(500).json({
+    return res.status(status).json({
         success: false,
-        // message: "Serverda kutilmagan xatolik yuz berdi",
-        error: err.message || 'Serverda ichki xatolik yuz berdi',
+        message: err.message || "Internal server error",
     })
 }
