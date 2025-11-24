@@ -6,7 +6,7 @@ const router = Router()
 
 router.get("/", authGuard, roleGuard(["admin"]), UserController.getAllUsers)
 router.get("/:id", authGuard, roleGuard(["admin"]), UserController.getSingleUser)
-router.put("/:id", authGuard, roleGuard(["admin"]), UserController.editUser)
+router.put("/:id", authGuard, roleGuard(["admin"]), UserController.updateUser)
 router.delete("/:id", authGuard, roleGuard(["admin"]), UserController.removeUser)
 
 export { router as userRouter}

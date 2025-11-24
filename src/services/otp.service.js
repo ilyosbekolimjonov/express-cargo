@@ -1,4 +1,4 @@
-import knex from "../db/knex.js";
+import db from "../db/knex.js";
 import { sendOtpEmail } from "../utils/mailer.js";
 
 export function generateOtp() {
@@ -8,7 +8,7 @@ export function generateOtp() {
 export async function saveOtp(userId, code) {
     const expiresAt = new Date(Date.now() + 1000 * 60);
 
-    await knex("otps").insert({
+    await db("otps").insert({
         user_id: userId,
         code,
         expires_at: expiresAt,

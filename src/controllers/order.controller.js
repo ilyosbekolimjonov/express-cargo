@@ -19,11 +19,15 @@ export const OrderController = {
 
     async getAllOrders(req, res) {
         try {
-            const orders = await OrderService.getAllOrders();
+            const { page: page, limit: limit } = req.query
+            const result = await OrderService.getAllOrders(page, limit);
 
             res.json({
                 success: true,
-                data: orders,
+                page: result.page,
+                limit: result.limit,
+                total: result.total,
+                data: result.data,
             });
         } catch (err) {
             res.status(400).json({

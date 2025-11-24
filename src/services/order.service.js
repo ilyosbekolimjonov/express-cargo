@@ -1,9 +1,10 @@
-import knex from "../db/knex.js"
+import db from "../db/knex.js"
+import { paginate } from "../utils/pagination.js"
 
 export async function createOrder(clientId, data) {
     const { product_link, quantity, current_price, currency_type, truck, description } = data
 
-    const [order] = await knex("orders")
+    const [order] = await db("orders")
         .insert({
             client_id: clientId,
             product_link,
@@ -18,20 +19,33 @@ export async function createOrder(clientId, data) {
     return order
 }
 
-export async function getAllOrders() {
-    return await knex("orders")
+export async function getAllOrders(page, limit) {
+    const { page: currentPage, limit: take, offset } = paginate(page, limit)
+
+    const [{ count }] = await db("orders").count("* as count")
+
+    const orders = await db("orders")
         .select("*")
-        .orderBy("created_at", "desc");
+        .limit(take)
+        .offset(offset)
+
+
+    return {
+        page: currentPage,
+        limit: take,
+        total: Number(count),
+        data: orders
+    }
 }
 
 export async function getMyOrders(clientId) {
-    return await knex("orders")
+    return await db("orders")
         .where({ client_id: clientId })
         .orderBy("created_at", "desc")
 }
 
 export async function getOrderById(clientId, orderId) {
-    const order = await knex("orders")
+    const order = await db("orders")
         .where({ id: orderId, client_id: clientId })
         .first()
 
@@ -43,7 +57,7 @@ export async function getOrderById(clientId, orderId) {
 }
 
 export async function updateOrder(clientId, orderId, data) {
-    const order = await knex("orders")
+    const order = await db("orders")
         .where({ id: orderId, client_id: clientId })
         .first()
 
@@ -67,9 +81,9 @@ export async function updateOrder(clientId, orderId, data) {
         }
     }
 
-    updateData.updated_at = knex.fn.now()
+    updateData.updated_at = db.fn.now()
 
-    const [updated] = await knex("orders")
+    const [updated] = await db("orders")
         .where({ id: orderId })
         .update(updateData)
         .returning("*")
@@ -78,7 +92,7 @@ export async function updateOrder(clientId, orderId, data) {
 }
 
 export async function deleteOrder(clientId, orderId) {
-    const order = await knex("orders")
+    const order = await db("orders")
         .where({ id: orderId, client_id: clientId })
         .first()
 
@@ -86,14 +100,14 @@ export async function deleteOrder(clientId, orderId) {
         throw new Error("Order not found")
     }
 
-    await knex("orders").where({ id: orderId }).delete()
+    await db("orders").where({ id: orderId }).delete()
 
     return true
 }
 
 export async function updateOrderStatus(clientId, orderId, status) {
-    
-    const order = await knex("orders")
+
+    const order = await db("orders")
         .where({ id: orderId, client_id: clientId })
         .first()
 
@@ -107,11 +121,11 @@ export async function updateOrderStatus(clientId, orderId, status) {
         throw new Error("Invalid order status")
     }
 
-    const [updated] = await knex("orders")
+    const [updated] = await db("orders")
         .where({ id: orderId })
         .update({
             status,
-            updated_at: knex.fn.now(),
+            updated_at: db.fn.now(),
         })
         .returning("*")
 
