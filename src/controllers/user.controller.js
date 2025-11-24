@@ -4,7 +4,7 @@ import { updateUserSchema } from "../validations/user.validation.js"
 export const UserController = {
     async getAllUsers(req, res, next) {
         try {
-            const { page: page, limit: limit } = req.query
+            const { page, limit } = req.query
 
             const result = await UserService.getUsers(page, limit)
 
@@ -41,7 +41,7 @@ export const UserController = {
         }
     },
 
-    async editUser(req, res, next) {
+    async updateUser(req, res, next) {
         try {
             const validated = updateUserSchema.parse(req.body)
             const { id } = req.params

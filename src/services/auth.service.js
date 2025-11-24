@@ -1,17 +1,17 @@
 import bcrypt from "bcrypt"
-import knex from "../db/knex.js"
+import db from "../db/knex.js"
 import { generateOtp, saveOtp, sendOtpToEmail } from "./otp.service.js"
 import { generateAccessToken, generateRefreshToken, verifyToken } from "../utils/jwt.js"
 
 export async function register({ full_name, email, password, phone_number, role }) {
-    const existing = await knex("users").where({ email }).first()
+    const existing = await db("users").where({ email }).first()
     if (existing) {
         throw new Error("User already exists with this email")
     }
 
     const hash = await bcrypt.hash(password, 10)
 
-    const [user] = await knex("users")
+    const [user] = await db("users")
         .insert({
             full_name,
             email,
@@ -30,12 +30,12 @@ export async function register({ full_name, email, password, phone_number, role 
 }
 
 export async function verifyOtp({ email, code }) {
-    const user = await knex("users").where({ email }).first()
+    const user = await db("users").where({ email }).first()
     if (!user) {
         throw new Error("User not found")
     }
 
-    const otpRecord = await knex("otps")
+    const otpRecord = await db("otps")
         .where({ user_id: user.id, code, is_used: false })
         .orderBy("created_at", "desc")
         .first()
@@ -48,11 +48,11 @@ export async function verifyOtp({ email, code }) {
         throw new Error("OTP expired")
     }
 
-    await knex("otps")
+    await db("otps")
         .where({ id: otpRecord.id })
         .update({ is_used: true })
 
-    await knex("users")
+    await db("users")
         .where({ id: user.id })
         .update({ is_active: true })
 
@@ -62,7 +62,7 @@ export async function verifyOtp({ email, code }) {
 }
 
 export async function resendOtp({ email }) {
-    const user = await knex("users").where({ email }).first()
+    const user = await db("users").where({ email }).first()
     if (!user) {
         throw new Error("User not found")
     }
@@ -80,7 +80,7 @@ export async function resendOtp({ email }) {
 }
 
 export async function login({ email, password }) {
-    const user = await knex("users").where({ email }).first()
+    const user = await db("users").where({ email }).first()
     if (!user) {
         throw new Error("User not found")
     }
@@ -97,7 +97,7 @@ export async function login({ email, password }) {
     const accessToken = generateAccessToken({ id: user.id, role: user.role })
     const refreshToken = generateRefreshToken({ id: user.id, role: user.role })
 
-    await knex("users")
+    await db("users")
         .where({ id: user.id })
         .update({ refresh_token: refreshToken })
 
@@ -108,7 +108,7 @@ export async function login({ email, password }) {
 }
 
 export async function myProfile(userId) {
-    return await knex("users")
+    return await db("users")
         .select("id", "full_name", "email", "role", "is_active", "created_at")
         .where({ id: userId })
         .first()
@@ -119,7 +119,7 @@ export async function refreshToken(oldRefreshToken) {
         throw new Error("Refresh token required")
     }
 
-    const user = await knex("users").where({ refresh_token: oldRefreshToken }).first()
+    const user = await db("users").where({ refresh_token: oldRefreshToken }).first()
     if (!user) {
         throw new Error("Invalid refresh token")
     }
@@ -141,7 +141,7 @@ export async function refreshToken(oldRefreshToken) {
         role: decoded.role,
     })
 
-    await knex("users")
+    await db("users")
         .where({ id: user.id })
         .update({ refresh_token: newRefreshToken })
 
@@ -152,13 +152,13 @@ export async function refreshToken(oldRefreshToken) {
 }
 
 export async function logout(userId, refreshToken) {
-    const user = await knex("users").where({ id: userId }).first()
+    const user = await db("users").where({ id: userId }).first()
 
     if (user.refresh_token !== refreshToken) {
         throw new Error("Invalid refresh token")
     }
 
-    await knex("users")
+    await db("users")
         .where({ id: userId })
         .update({ refresh_token: null })
 
